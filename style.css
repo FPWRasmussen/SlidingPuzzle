@@ -11,7 +11,8 @@ body {
     align-items: center;
     min-height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     position: relative;
 }
 
@@ -151,56 +152,6 @@ h1 {
     }
     75% {
         transform: rotate(5deg) scale(1.02);
-    }
-}
-
-@media (max-width: 600px) {
-    body {
-        align-items: flex-start;
-        overflow-y: auto;
-        background: #f0f2f5;
-    }
-
-    .container {
-        width: 100%;
-        min-height: 100vh;
-        padding: 10px;
-        border-radius: 0;
-        box-shadow: none;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-    }
-
-    h1 {
-        font-size: 1.8rem;
-        margin: 15px 0;
-    }
-
-    .game-info {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .info-item {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-    }
-
-    /* Scale down the puzzle container to fit mobile screens */
-    #puzzle-container {
-        transform: scale(0.75);
-        transform-origin: top center;
-        margin: 10px auto;
-        margin-bottom: -80px; 
-    }
-    
-    /* Adjust buttons/controls if any */
-    button {
-        padding: 12px 24px;
-        font-size: 1.1rem;
-        margin-top: 20px;
     }
 }
 
