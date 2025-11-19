@@ -1,0 +1,156 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow: hidden;
+    position: relative;
+}
+
+.container {
+    text-align: center;
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 10;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+}
+
+.game-info {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+}
+
+.info-item {
+    padding: 10px 20px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.info-item span {
+    font-weight: bold;
+    color: #667eea;
+}
+
+.info-item.completed {
+    background: #4CAF50;
+    color: white;
+    animation: pulse 1s ease-in-out;
+}
+
+.info-item.completed span {
+    color: white;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+#puzzle-container {
+    position: relative;
+    width: 450px;
+    height: 450px;
+    margin: 20px auto;
+    background: #333;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    transition: all 0.5s ease;
+}
+
+#puzzle-container.completed {
+    box-shadow: 0 0 50px rgba(76, 175, 80, 0.6);
+}
+
+.puzzle-piece {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border: 1px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-size: 450px 450px;
+    background-color: white;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+.puzzle-piece:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.empty {
+    background: transparent !important;
+    border: none;
+    cursor: default;
+}
+
+.empty:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Snow effect */
+.snowflake {
+    position: fixed;
+    top: -20px;
+    color: white;
+    text-shadow: 0 0 5px rgba(0,0,0,0.3);
+    user-select: none;
+    z-index: 1000;
+    pointer-events: none;
+    animation-name: fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(-20px) rotate(0deg);
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+    }
+}
+
+.celebration {
+    animation: celebrate 0.5s ease;
+}
+
+@keyframes celebrate {
+    0%, 100% {
+        transform: rotate(0deg) scale(1);
+    }
+    25% {
+        transform: rotate(-5deg) scale(1.02);
+    }
+    75% {
+        transform: rotate(5deg) scale(1.02);
+    }
+}
+
