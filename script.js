@@ -1,12 +1,16 @@
 // Game configuration
-const GRID_SIZE = 3;
-const PIECE_SIZE = 150;
-const TOTAL_SIZE = GRID_SIZE * PIECE_SIZE;
+const GRID_SIZE = 4;
 const IMAGE_PATH = 'images/qr.png';
+
+// Derive empty tile index and position from grid size (always bottom-right)
+const EMPTY_INDEX = GRID_SIZE * GRID_SIZE - 1;
+function getInitialEmptyPosition() {
+    return { row: GRID_SIZE - 1, col: GRID_SIZE - 1 };
+}
 
 // Game state
 let pieces = [];
-let emptyPosition = { row: 2, col: 2 };
+let emptyPosition = getInitialEmptyPosition();
 let moveCount = 0;
 let startTime = null;
 let timerInterval = null;
@@ -14,11 +18,24 @@ let isGameWon = false;
 let isShuffling = false;
 let musicStarted = false;
 
+// Helper to calculate percentages based on grid size
+// For a 3x3 grid: 0->0%, 1->50%, 2->100%
+function getBackgroundPosition(index) {
+    return index * (100 / (GRID_SIZE - 1));
+}
+
+// Helper for Width/Height/Top/Left
+function getGridPercentage() {
+    return 100 / GRID_SIZE;
+}
+
 // Initialize the puzzle
 function initPuzzle() {
     const container = document.getElementById('puzzle-container');
     container.innerHTML = '';
     pieces = [];
+    
+    const sizePct = getGridPercentage();
     
     // Create pieces
     for (let row = 0; row < GRID_SIZE; row++) {
@@ -27,26 +44,43 @@ function initPuzzle() {
             const pieceNum = row * GRID_SIZE + col;
             const piece = document.createElement('div');
             piece.className = 'puzzle-piece';
+            
+            // Responsive sizing
+            piece.style.width = `${sizePct}%`;
+            piece.style.height = `${sizePct}%`;
+            
             piece.dataset.row = row;
             piece.dataset.col = col;
             piece.dataset.correctRow = row;
             piece.dataset.correctCol = col;
             
-            if (pieceNum === 8) {
+            if (pieceNum === EMPTY_INDEX) {
                 // This is the empty space
                 piece.classList.add('empty');
                 piece.dataset.pieceNum = '8';
             } else {
                 // Set background image for this piece
                 piece.style.backgroundImage = `url('${IMAGE_PATH}')`;
-                piece.style.backgroundPosition = `-${col * PIECE_SIZE}px -${row * PIECE_SIZE}px`;
+                
+                // Scale background to cover the hypothetical full grid size
+                // For 3x3, the image needs to be 300% the size of a single piece
+                piece.style.backgroundSize = `${GRID_SIZE * 100}%`;
+                
+                // Calculate position in percentages
+                piece.style.backgroundPosition = `${getBackgroundPosition(col)}% ${getBackgroundPosition(row)}%`;
                 piece.dataset.pieceNum = pieceNum;
             }
             
-            piece.style.left = `${col * PIECE_SIZE}px`;
-            piece.style.top = `${row * PIECE_SIZE}px`;
+            // Position the piece in the grid
+            piece.style.left = `${col * sizePct}%`;
+            piece.style.top = `${row * sizePct}%`;
             
             piece.addEventListener('click', handlePieceClick);
+            // Add touch support for better mobile response
+            piece.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // Prevent scrolling when tapping puzzle
+                handlePieceClick(e);
+            }, { passive: false });
             
             pieces[row][col] = piece;
             container.appendChild(piece);
@@ -63,17 +97,19 @@ function startMusic() {
         audio.volume = 0.3; // Set to 30% volume
         audio.play().then(() => {
             musicStarted = true;
-            console.log('Music started');
+            console.log('Musik startet');
         }).catch(e => {
-            console.log('Could not play music:', e);
+            console.log('Kunne ikke afspille musik:', e);
         });
     }
 }
 
-
 // Handle click on a piece
 function handlePieceClick(event) {
     const piece = event.target;
+    // On touch events, target might differ slightly depending on browser handling
+    if (!piece.dataset.row) return; 
+    
     const currentRow = parseInt(piece.dataset.row);
     const currentCol = parseInt(piece.dataset.col);
     movePiece(currentRow, currentCol);
@@ -90,14 +126,14 @@ function movePiece(row, col, isShuffleMove = false) {
         // Start timer and music on first player move
         if (moveCount === 0 && !startTime && !isShuffleMove) {
             startTimer();
-            startMusic(); // Start music on first move
+            startMusic();
         }
         
         // Swap the piece with the empty space
         const piece = pieces[row][col];
         const emptyPiece = pieces[emptyPosition.row][emptyPosition.col];
         
-        // Swap positions in DOM
+        // Swap positions in DOM (using styles set during init)
         const tempLeft = piece.style.left;
         const tempTop = piece.style.top;
         piece.style.left = emptyPiece.style.left;
@@ -201,10 +237,12 @@ function handleWin() {
     stopTimer();
     
     // Reveal the last piece
-    const emptyPiece = pieces[2][2];
+    const emptyPiece = pieces[GRID_SIZE-1][GRID_SIZE-1];
     emptyPiece.classList.remove('empty');
     emptyPiece.style.backgroundImage = `url('${IMAGE_PATH}')`;
-    emptyPiece.style.backgroundPosition = '-300px -300px';
+    emptyPiece.style.backgroundSize = `${GRID_SIZE * 100}%`;
+    // 100% 100% corresponds to the bottom-right corner
+    emptyPiece.style.backgroundPosition = '100% 100%';
     
     // Add visual feedback for completion
     const container = document.getElementById('puzzle-container');
@@ -218,8 +256,6 @@ function handleWin() {
     
     // Start snow effect
     startSnowEffect();
-    
-    // Music continues playing (no pause)
 }
 
 // Snow effect
@@ -255,7 +291,9 @@ function debugSolve() {
     const container = document.getElementById('puzzle-container');
     container.innerHTML = '';
     pieces = [];
-    emptyPosition = { row: 2, col: 2 };
+    emptyPosition = getInitialEmptyPosition();
+    
+    const sizePct = getGridPercentage();
 
     for (let row = 0; row < GRID_SIZE; row++) {
         pieces[row] = [];
@@ -263,22 +301,28 @@ function debugSolve() {
             const pieceNum = row * GRID_SIZE + col;
             const piece = document.createElement('div');
             piece.className = 'puzzle-piece';
+            
+            // Responsive sizing
+            piece.style.width = `${sizePct}%`;
+            piece.style.height = `${sizePct}%`;
+            
             piece.dataset.row = row;
             piece.dataset.col = col;
             piece.dataset.correctRow = row;
             piece.dataset.correctCol = col;
 
-            if (pieceNum === 8) {
+            if (pieceNum === EMPTY_INDEX) {
                 piece.classList.add('empty');
                 piece.dataset.pieceNum = '8';
             } else {
                 piece.style.backgroundImage = `url('${IMAGE_PATH}')`;
-                piece.style.backgroundPosition = `-${col * PIECE_SIZE}px -${row * PIECE_SIZE}px`;
+                piece.style.backgroundSize = `${GRID_SIZE * 100}%`;
+                piece.style.backgroundPosition = `${getBackgroundPosition(col)}% ${getBackgroundPosition(row)}%`;
                 piece.dataset.pieceNum = pieceNum;
             }
 
-            piece.style.left = `${col * PIECE_SIZE}px`;
-            piece.style.top = `${row * PIECE_SIZE}px`;
+            piece.style.left = `${col * sizePct}%`;
+            piece.style.top = `${row * sizePct}%`;
 
             pieces[row][col] = piece;
             container.appendChild(piece);
@@ -316,4 +360,5 @@ window.addEventListener('DOMContentLoaded', () => {
     
     // Also try to start music on any click anywhere on the page (for mobile)
     document.addEventListener('click', startMusic, { once: true });
+    document.addEventListener('touchstart', startMusic, { once: true });
 });

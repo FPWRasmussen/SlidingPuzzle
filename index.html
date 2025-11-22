@@ -1,26 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="da">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Sliding Puzzle</title>
+    <title>QR-kode Puslespil</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <div class="game-info">
             <div class="info-item">
-                Moves: <span id="moveCount">0</span>
+                Træk: <span id="moveCount">0</span>
             </div>
             <div class="info-item">
-                Time: <span id="timer">00:00</span>
+                Tid: <span id="timer">00:00</span>
             </div>
         </div>
 
         <div id="puzzle-container"></div>
-
-        <!-- TEMP: Debug button to instantly solve the puzzle -->
-        <button onclick="debugSolve()">Debug Solve</button>
 
         <!-- Background music (auto-plays, no controls) -->
         <audio id="backgroundMusic" loop autoplay>
